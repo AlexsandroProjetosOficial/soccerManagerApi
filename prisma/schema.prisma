@@ -1,0 +1,173 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  first_name String
+  last_name  String
+  email      String   @unique
+  phone      String
+  password   String
+  avatar     String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  Game       Game[]
+
+  @@map("users")
+}
+
+model Organizer {
+  id         String   @id @default(uuid())
+  name       String   @unique
+  avatar     String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  League     League[]
+
+  @@map("organizers")
+}
+
+model League {
+  id           String    @id @default(uuid())
+  name         String
+  season       String
+  avatar       String?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+  organizer_id String
+  organizer    Organizer @relation(fields: [organizer_id], references: [id])
+  Game         Game[]
+
+  @@map("leagues")
+}
+
+model Team {
+  id          String        @id @default(uuid())
+  name        String
+  avatar      String?
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+  home_games  Game[]        @relation("HomeGames")
+  away_games  Game[]        @relation("AwayGames")
+  Game_detail Game_detail[]
+
+  @@map("teams")
+}
+
+model Stadium {
+  id           String   @id @default(uuid())
+  name         String
+  nickname     String
+  avatar       String?
+  street       String
+  number       String
+  complement   String
+  neighborhood String
+  city         String
+  state        String
+  zip_code     String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  Game         Game[]
+
+  @@map("stadiums")
+}
+
+model Referee {
+  id             String           @id @default(uuid())
+  name           String
+  position       String
+  avatar         String?
+  phone          String
+  email          String?
+  created_at     DateTime         @default(now())
+  updated_at     DateTime         @updatedAt
+  Match_official Match_official[]
+
+  @@map("referees")
+}
+
+model Category {
+  id         String   @id @default(uuid())
+  name       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  Game       Game[]
+
+  @@map("categories")
+}
+
+model Game {
+  id                              String           @id @default(uuid())
+  user_id                         String
+  league_id                       String
+  team_home_id                    String
+  team_away_id                    String
+  stadium_id                      String
+  category_id                     String
+  match_date                      DateTime
+  time_match_official_first_half  DateTime?
+  time_team_home_first_half       DateTime?
+  time_team_away_first_half       DateTime?
+  start_time_first_half           DateTime?
+  additional_time_first_half      Int?
+  end_time_first_half             DateTime?
+  time_match_official_second_half DateTime?
+  time_team_home_second_half      DateTime?
+  time_team_away_second_half      DateTime?
+  start_time_second_half          DateTime?
+  additional_time_second_half     Int?
+  end_time_second_half            DateTime?
+  status                          String           @default("waiting")
+  created_at                      DateTime         @default(now())
+  updated_at                      DateTime         @updatedAt
+  league                          League           @relation(fields: [league_id], references: [id])
+  team_home                       Team             @relation(fields: [team_home_id], references: [id], name: "HomeGames")
+  team_away                       Team             @relation(fields: [team_away_id], references: [id], name: "AwayGames")
+  stadium                         Stadium          @relation(fields: [stadium_id], references: [id])
+  category                        Category         @relation(fields: [category_id], references: [id])
+  user                            User             @relation(fields: [user_id], references: [id])
+  Match_official                  Match_official[]
+  Game_detail                     Game_detail[]
+
+  @@map("games")
+}
+
+model Match_official {
+  id                   String    @id @default(uuid())
+  game_id              String
+  referee_id           String
+  referee_arrival_time DateTime?
+  game                 Game      @relation(fields: [game_id], references: [id])
+  referee              Referee   @relation(fields: [referee_id], references: [id])
+  created_at           DateTime  @default(now())
+
+  @@map("match_officials")
+}
+
+model Game_detail {
+  id                String   @id @default(uuid())
+  game_id           String
+  team_id           String
+  type              String
+  player_number_one Int
+  player_number_two Int?
+  time              Int
+  stop              String?
+  first_half        Boolean?
+  second_half       Boolean?
+  created_at        DateTime @default(now())
+  game              Game     @relation(fields: [game_id], references: [id])
+  team              Team     @relation(fields: [team_id], references: [id])
+
+  @@map("game_details")
+}
