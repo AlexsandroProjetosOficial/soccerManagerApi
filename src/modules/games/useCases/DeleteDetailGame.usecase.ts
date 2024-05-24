@@ -1,24 +1,24 @@
 import moment from 'moment';
 import { AppError } from "../../../errors/AppErrors";
+import type { IDeleteGameDetailRequest } from '../../../interfaces/game/IDeleteGameDetailRequest';
 import type { IDetails } from '../../../interfaces/game/IDetails';
-import type { IPostDetailsGameRequest } from '../../../interfaces/game/IPostDetailsGameRequest';
 import { GameRepository } from "../../../repositories/game.repository";
 
-class PostDetailsGameUseCase {
+class DeleteDetailGameUseCase {
   private gameRepository: GameRepository;
 
   constructor() {
     this.gameRepository = new GameRepository()
   }
 
-  async execute({ game, team, type, playerRegisterCardOne, playerRegisterCardTwo, result, stop, half }: IPostDetailsGameRequest): Promise<IDetails | undefined> {
+  async execute({ detailGame, game }: IDeleteGameDetailRequest): Promise<IDetails | undefined> {
     try {
-      const gameDetailsRegistered = await this.gameRepository.postGameDetailsByGameId({ game, team, type, playerRegisterCardOne, playerRegisterCardTwo, result, stop, half });
+      console.log(detailGame);
+      const isGameDetail = await this.gameRepository.deleteGameDetailByDetalID(detailGame);
 
-      if (!gameDetailsRegistered) throw new AppError({ message: 'Não foi possível registrar o detalhe.', statusCode: 400, errors: [] });
+      if (!isGameDetail) throw new AppError({ message: 'Não foi possivel deletar o detalhe da partida.', statusCode: 400, errors: [] });
 
       console.log(game);
-
       const gameDetails = await this.gameRepository.findGameDetailsByGameId(game);
 
       console.log(gameDetails);
@@ -107,4 +107,4 @@ class PostDetailsGameUseCase {
   }
 }
 
-export { PostDetailsGameUseCase };
+export { DeleteDetailGameUseCase };

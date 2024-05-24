@@ -119,6 +119,42 @@ const GetDetailsGameSchema = z.object({
     })
 })
 
+const DeleteDetailsGameSchema = z.object({
+  detailGame: z
+    .string({
+      required_error: 'O campo Identificador do detalhe da partida é obrigatório.',
+      invalid_type_error: 'O campo somente aceita string.',
+    }),
+  game: z
+    .string({
+      required_error: 'O campo Identificador da partida é obrigatório.',
+      invalid_type_error: 'O campo somente aceita string.',
+    })
+})
+
+const UpdateGameDetailSchema = z.object({
+  game: z
+    .string({
+      required_error: 'O campo Identificador da partida é obrigatório.',
+      invalid_type_error: 'O campo somente aceita string.',
+    }),
+  gameDetail: z
+    .string({
+      required_error: 'O campo Identificador do detalhe da partida é obrigatório.',
+      invalid_type_error: 'O campo somente aceita string.',
+    }),
+  column: z
+    .string({
+      required_error: 'O campo Identificador da partida é obrigatório.',
+      invalid_type_error: 'O campo somente aceita string.',
+    }),
+  value: z
+    .string({
+      required_error: 'O campo Identificador da partida é obrigatório.',
+      invalid_type_error: 'O campo somente aceita string.',
+    })
+})
+
 const PostDetailsGameSchema = z.object({
   game: z
     .string({
@@ -171,5 +207,7 @@ export {
   UpdateGameSchema,
   GetTimesGameSchema,
   GetDetailsGameSchema,
-  PostDetailsGameSchema
+  PostDetailsGameSchema,
+  DeleteDetailsGameSchema,
+  UpdateGameDetailSchema
 }

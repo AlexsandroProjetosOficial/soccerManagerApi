@@ -1,24 +1,32 @@
-import moment from 'moment';
+import moment from "moment";
 import { AppError } from "../../../errors/AppErrors";
-import type { IDetails } from '../../../interfaces/game/IDetails';
-import type { IPostDetailsGameRequest } from '../../../interfaces/game/IPostDetailsGameRequest';
+import type { IDetails } from "../../../interfaces/game/IDetails";
+import type { IGetOfficialsRequest } from '../../../interfaces/game/IGetOfficialsRequest';
+import type { IOfficials } from '../../../interfaces/game/IOfficials';
+import type { IOfficialsResponse } from '../../../interfaces/game/IOfficialsResponse';
+import type { IUpdateGameDetailRequest } from "../../../interfaces/game/IUpdateGameDetailRequest";
+import type { IUpdateOfficialRequest } from "../../../interfaces/game/IUpdateOfficialRequest";
 import { GameRepository } from "../../../repositories/game.repository";
 
-class PostDetailsGameUseCase {
+class UpdateGameDetailUseCase {
   private gameRepository: GameRepository;
 
   constructor() {
     this.gameRepository = new GameRepository()
   }
 
-  async execute({ game, team, type, playerRegisterCardOne, playerRegisterCardTwo, result, stop, half }: IPostDetailsGameRequest): Promise<IDetails | undefined> {
+  async execute({
+    game,
+    gameDetail,
+    column,
+    value
+  }: IUpdateGameDetailRequest): Promise<IDetails | void> {
     try {
-      const gameDetailsRegistered = await this.gameRepository.postGameDetailsByGameId({ game, team, type, playerRegisterCardOne, playerRegisterCardTwo, result, stop, half });
+      const isGameDetailUpdated = await this.gameRepository.updateGameDetailById({ gameDetail, column, value });
 
-      if (!gameDetailsRegistered) throw new AppError({ message: 'Não foi possível registrar o detalhe.', statusCode: 400, errors: [] });
+      if (!isGameDetailUpdated) throw new AppError({ message: 'Não foi possivel atualizar o detalhe da partida.', statusCode: 400, errors: [] });
 
       console.log(game);
-
       const gameDetails = await this.gameRepository.findGameDetailsByGameId(game);
 
       console.log(gameDetails);
@@ -107,4 +115,4 @@ class PostDetailsGameUseCase {
   }
 }
 
-export { PostDetailsGameUseCase };
+export { UpdateGameDetailUseCase };

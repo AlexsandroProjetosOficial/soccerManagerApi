@@ -3,14 +3,16 @@ import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { AppError } from "../errors/AppErrors";
 import type { IGetGameRequest } from "../interfaces/game/IGetGameRequest";
 import type { IReply } from "../interfaces/reply/IReply";
+import { DeleteDetailGameUseCase } from "../modules/games/useCases/DeleteDetailGame.usecase";
 import { GetDetailsGameUseCase } from "../modules/games/useCases/GetDetailsGame.usecase";
 import { GetGamesUseCase } from "../modules/games/useCases/GetGames.usecase";
 import { GetOfficialsUseCase } from "../modules/games/useCases/GetOfficials.usecase";
 import { GetTimesGameUseCase } from "../modules/games/useCases/GetTimesGame.usecase";
 import { PostDetailsGameUseCase } from "../modules/games/useCases/PostDetailsGame.usecase";
 import { UpdateGameUseCase } from "../modules/games/useCases/UpdateGame.usecase";
+import { UpdateGameDetailUseCase } from "../modules/games/useCases/UpdateGameDetail.usecase";
 import { UpdateOfficialsUseCase } from "../modules/games/useCases/UpdateOfficial.usecase";
-import { GetDetailsGameSchema, GetGamesSchema, GetOfficialsSchema, GetTimesGameSchema, PostDetailsGameSchema, UpdateGameSchema, UpdatedOfficialSchema } from "../schemas";
+import { DeleteDetailsGameSchema, GetDetailsGameSchema, GetGamesSchema, GetOfficialsSchema, GetTimesGameSchema, PostDetailsGameSchema, UpdateGameDetailSchema, UpdateGameSchema, UpdatedOfficialSchema } from "../schemas";
 
 const gameRoutes = async (fastify: FastifyInstance) => {
   fastify.withTypeProvider<ZodTypeProvider>().get(
@@ -227,6 +229,72 @@ const gameRoutes = async (fastify: FastifyInstance) => {
         return await reply.code(201).send({
           error: false,
           message: 'Detalhes do jogo registrado com sucesso.',
+          errors: [],
+          data: {
+            datailsGame
+          }
+        });
+      } catch (error) {
+        if (error instanceof AppError) {
+          return await reply.code(error.statusCode).send({
+            error: error.error,
+            errors: error.errors,
+            message: error.message,
+          });
+        }
+      }
+    }
+  )
+
+  fastify.withTypeProvider<ZodTypeProvider>().delete(
+    '/details',
+    {
+      schema: {
+        querystring: DeleteDetailsGameSchema
+      }
+    },
+    async ({ query: { detailGame, game } }, reply) => {
+      try {
+        const deleteDetailGameUseCase = new DeleteDetailGameUseCase();
+
+        const datailsGame = await deleteDetailGameUseCase.execute({ detailGame, game });
+
+        return await reply.code(200).send({
+          error: false,
+          message: 'Detalhe do jogo apagado com sucesso.',
+          errors: [],
+          data: {
+            datailsGame
+          }
+        });
+      } catch (error) {
+        if (error instanceof AppError) {
+          return await reply.code(error.statusCode).send({
+            error: error.error,
+            errors: error.errors,
+            message: error.message,
+          });
+        }
+      }
+    }
+  )
+
+  fastify.withTypeProvider<ZodTypeProvider>().patch(
+    '/details',
+    {
+      schema: {
+        body: UpdateGameDetailSchema
+      }
+    },
+    async ({ body: { game, gameDetail, column, value } }, reply) => {
+      try {
+        const updateGameDetailUseCase = new UpdateGameDetailUseCase();
+
+        const datailsGame = await updateGameDetailUseCase.execute({ game, gameDetail, column, value });
+
+        return await reply.code(200).send({
+          error: false,
+          message: 'Detalhe do jogo atualizado com sucesso.',
           errors: [],
           data: {
             datailsGame

@@ -163,6 +163,7 @@ model Game_detail {
   player_number_two Int?
   time              Int
   stop              String?
+  is_confirmed      Boolean  @default(false)
   first_half        Boolean?
   second_half       Boolean?
   created_at        DateTime @default(now())

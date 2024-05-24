@@ -28,7 +28,8 @@ class GetDetailsGameUseCase {
               type: item.type,
               playerNumber: item.player_number_one,
               period: item.first_half ? 'firstHalf' : 'secondHalf',
-              time: moment.utc(item.time).format('mm:ss')
+              time: moment.utc(item.time).format('mm:ss'),
+              isConfirmed: Boolean(item.is_confirmed)
             }
           }),
           goals: gameDetails?.team_home.Game_detail.filter(goal => ['goal'].includes(goal.type)).map(item => {
@@ -36,7 +37,8 @@ class GetDetailsGameUseCase {
               id: item.id,
               playerNumber: item.player_number_one,
               period: item.first_half ? 'firstHalf' : 'secondHalf',
-              time: moment.utc(item.time).format('mm:ss')
+              time: moment.utc(item.time).format('mm:ss'),
+              isConfirmed: Boolean(item.is_confirmed)
             }
           }),
           substitutions: gameDetails?.team_home.Game_detail.filter(substituiton => ['substitution'].includes(substituiton.type)).map(item => {
@@ -46,7 +48,8 @@ class GetDetailsGameUseCase {
               playerIn: item.player_number_one,
               playerOut: item.player_number_two,
               period: item.first_half ? 'firstHalf' : 'secondHalf',
-              time: moment.utc(item.time).format('mm:ss')
+              time: moment.utc(item.time).format('mm:ss'),
+              isConfirmed: Boolean(item.is_confirmed)
             }
           })
         },
@@ -60,7 +63,8 @@ class GetDetailsGameUseCase {
               type: item.type,
               playerNumber: item.player_number_one,
               period: item.first_half ? 'firstHalf' : 'secondHalf',
-              time: moment.utc(item.time).format('mm:ss')
+              time: moment.utc(item.time).format('mm:ss'),
+              isConfirmed: Boolean(item.is_confirmed)
             }
           }),
           goals: gameDetails?.team_away.Game_detail.filter(goal => ['goal'].includes(goal.type)).map(item => {
@@ -68,7 +72,8 @@ class GetDetailsGameUseCase {
               id: item.id,
               playerNumber: item.player_number_one,
               period: item.first_half ? 'firstHalf' : 'secondHalf',
-              time: moment.utc(item.time).format('mm:ss')
+              time: moment.utc(item.time).format('mm:ss'),
+              isConfirmed: Boolean(item.is_confirmed)
             }
           }),
           substitutions: gameDetails?.team_away.Game_detail.filter(substituiton => ['substitution'].includes(substituiton.type)).map(item => {
@@ -78,7 +83,8 @@ class GetDetailsGameUseCase {
               playerIn: item.player_number_one,
               playerOut: item.player_number_two,
               period: item.first_half ? 'firstHalf' : 'secondHalf',
-              time: moment.utc(item.time).format('mm:ss')
+              time: moment.utc(item.time).format('mm:ss'),
+              isConfirmed: Boolean(item.is_confirmed)
             }
           })
         }

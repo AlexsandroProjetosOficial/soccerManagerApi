@@ -12,6 +12,7 @@ interface IGameDetails {
       stop: string | null;
       first_half: boolean | null;
       second_half: boolean | null;
+      is_confirmed: boolean;
     }[]
   },
   team_away: {
@@ -27,6 +28,7 @@ interface IGameDetails {
       stop: string | null;
       first_half: boolean | null;
       second_half: boolean | null;
+      is_confirmed: boolean;
     }[]
   }
 };

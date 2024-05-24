@@ -5,6 +5,8 @@ import type { IGetOfficialsRequest } from "./IGetOfficialsRequest";
 import type { IOfficials } from "./IOfficials";
 import type { IPostDetailsGameRequest } from "./IPostDetailsGameRequest";
 import type { ITimesGame } from "./ITimesGame";
+import type { IUpdateGameDetailRepositoryRequest } from "./IUpdateGameDetailRepositoryRequest";
+import type { IUpdateGameDetailRequest } from "./IUpdateGameDetailRequest";
 import type { IUpdateGameRequest } from "./IUpdateGameRequest";
 import type { IUpdateOfficialRequest } from "./IUpdateOfficialRequest";
 
@@ -16,6 +18,8 @@ interface IGameRepository {
   updateOfficialById(props: IUpdateOfficialRequest): Promise<boolean>;
   updateGameById(props: IUpdateGameRequest): Promise<boolean>;
   postGameDetailsByGameId(props: IPostDetailsGameRequest): Promise<boolean>;
+  deleteGameDetailByDetalID(props: string): Promise<boolean>;
+  updateGameDetailById(props: IUpdateGameDetailRepositoryRequest): Promise<boolean>;
 };
 
 export type { IGameRepository };

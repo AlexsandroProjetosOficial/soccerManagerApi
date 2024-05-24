@@ -8,11 +8,92 @@ import type { IOfficials } from "../interfaces/game/IOfficials";
 import type { IPostDetailsGameRequest } from "../interfaces/game/IPostDetailsGameRequest";
 import type { ITimesGame } from "../interfaces/game/ITimesGame";
 import type { ITypeColumns } from "../interfaces/game/ITypeColumns";
+import type { ITypeColumnsGameDetail } from "../interfaces/game/ITypeColumnsGameDetail";
+import type { IUpdateGameDetailRepositoryRequest } from "../interfaces/game/IUpdateGameDetailRepositoryRequest";
 import type { IUpdateGameRequest } from "../interfaces/game/IUpdateGameRequest";
 import type { IUpdateOfficialRequest } from "../interfaces/game/IUpdateOfficialRequest";
 import { prisma } from "../prisma/prisma";
 
 class GameRepository implements IGameRepository {
+  async updateGameDetailById({ gameDetail, column, value }: IUpdateGameDetailRepositoryRequest): Promise<boolean> {
+    const columnValue = {
+      'type': value,
+      'player_number_one': Number(value),
+      'player_number_two': Number(value),
+      'time': (value.split(':').map(Number)[0] * 60 * 1000) + (value.split(':').map(Number)[1] * 1000),
+      'stop': value,
+      'is_confirmed': Boolean(value),
+    }
+
+    if (column === 'first_half') {
+      const [gameDetailOne, gameDetailTwo] = await Promise.all([
+        await prisma.game_detail.update({
+          where: {
+            id: gameDetail
+          },
+          data: {
+            'first_half': true
+          }
+        }),
+        await prisma.game_detail.update({
+          where: {
+            id: gameDetail
+          },
+          data: {
+            'second_half': null
+          }
+        })
+      ]);
+
+      return !!(!!gameDetailOne && !!gameDetailTwo)
+    }
+
+    if (column === 'second_half') {
+      const [gameDetailOne, gameDetailTwo] = await Promise.all([
+        await prisma.game_detail.update({
+          where: {
+            id: gameDetail
+          },
+          data: {
+            'first_half': null
+          }
+        }),
+        await prisma.game_detail.update({
+          where: {
+            id: gameDetail
+          },
+          data: {
+            'second_half': true
+          }
+        })
+      ]);
+
+      return !!(!!gameDetailOne && !!gameDetailTwo)
+    }
+
+    const gameDetailUpdated = await prisma.game_detail.update({
+      where: {
+        id: gameDetail
+      },
+      data: {
+        [column]: columnValue[column as ITypeColumnsGameDetail]
+      }
+    });
+
+    console.log('timesGame', gameDetailUpdated);
+    return !!gameDetailUpdated;
+  }
+
+  async deleteGameDetailByDetalID(detailGame: string): Promise<boolean> {
+    const gameDetailDeleted = await prisma.game_detail.delete({
+      where: {
+        id: detailGame
+      }
+    });
+
+    return !!gameDetailDeleted;
+  }
+
   async postGameDetailsByGameId({ game, team, type, playerRegisterCardOne, playerRegisterCardTwo, result, stop, half }: IPostDetailsGameRequest): Promise<boolean> {
     const data = {}
     const time = (result.split(':').map(Number)[0] * 60 * 1000) + (result.split(':').map(Number)[1] * 1000);
@@ -67,6 +148,7 @@ class GameRepository implements IGameRepository {
                 stop: true,
                 first_half: true,
                 second_half: true,
+                is_confirmed: true
               },
               where: {
                 game_id: game
@@ -88,7 +170,8 @@ class GameRepository implements IGameRepository {
                 time: true,
                 stop: true,
                 first_half: true,
-                second_half: true
+                second_half: true,
+                is_confirmed: true
               },
               where: {
                 game_id: game
